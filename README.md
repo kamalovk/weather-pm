@@ -1,5 +1,5 @@
-TEST TASK FOR COMPANY
-# Getting Started with Create React App
+
+# TEST TASK FOR COMPANY
 
 
 ## Available Scripts
