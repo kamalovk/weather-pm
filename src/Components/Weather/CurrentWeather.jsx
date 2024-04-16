@@ -6,9 +6,6 @@ import { getHours } from "../../utils/timeStamp";
 const CurrentWeather = ({ weatherData, currentCity }) => {
   const { current, hourly } = weatherData;
 
-  if (!current || !hourly) {
-    return null;
-  }
   return (
     <Card size="small" style={{ height: "auto" }}>
       <Row align="middle">

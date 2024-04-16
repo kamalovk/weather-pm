@@ -43,10 +43,6 @@ const WeeklyWeather = ({ weeklyWeatherData }) => {
     ];
   }, []);
 
-  if (!weeklyWeatherData || !weeklyWeatherData.length) {
-    return null;
-  }
-
   return (
     <Card size="small">
       <h2>Weekly Weather Forecast</h2>

@@ -9,7 +9,6 @@ const App = () => {
 
   return (
     <Layout>
-
       <Header />
       <Content style={{ padding: "24px" }}>
         <WeatherMain />

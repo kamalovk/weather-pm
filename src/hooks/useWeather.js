@@ -11,7 +11,7 @@ export const useWeather = (selectedCity) => {
   const fetchWeatherByCoords = useCallback(async (lat, lon) => {
     try {
       setLoading(true);
-
+      // TODO replace axios by fetch
       const response = await axiosInstance.get(
         `onecall?lat=${lat}&lon=${lon}`
       );
@@ -27,9 +27,9 @@ export const useWeather = (selectedCity) => {
   }, [])
 
   useEffect(() => {
-    if (selectedCity !== undefined && selectedCity !== null) {
+    if (selectedCity) {
       fetchWeatherByCoords(selectedCity.lat, selectedCity.lon);
-    } else if (geoError === null && coordinates.lat !== undefined && coordinates.lon !== undefined) {
+    } else if (!geoError && coordinates.lat && coordinates.lon) {
       fetchWeatherByCoords(coordinates.lat, coordinates.lon);
     }
   }, [fetchWeatherByCoords, coordinates.lat, coordinates.lon, selectedCity, geoError]);

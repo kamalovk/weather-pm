@@ -5,18 +5,18 @@ import { debounce } from "../../utils/debounce";
 import { geoInstance } from "../../api/axiosInstance";
 
 const LocationSearch = ({ onSelect }) => {
-  const [query, setQuery] = useState(null);
+  const [query, setQuery] = useState("");
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  // TODO replace with useDebounce
   const debouncedSearch = useCallback(
     debounce(async (text) => {
       if (text) {
         try {
           setLoading(true);
           const response = await geoInstance.get(`direct?q=${text}&limit=10`);
-
+          // TODO replace fetch
           setCities(response.data);
           setError(null);
         } catch (error) {
@@ -30,11 +30,17 @@ const LocationSearch = ({ onSelect }) => {
     }, 1500),
     []
   );
+  const handleSearch = (text) => {
+    setQuery(text);
+    debouncedSearch(text);
+  };
 
   const handleSelectCity = (city) => {
+    console.log(city);
     const selectedObj = cities.find(
       (option) => `${option.name}-${option.country}` === city
     );
+    console.log(selectedObj, "obj");
     onSelect(selectedObj);
     setQuery(city);
     setCities([]);
@@ -45,20 +51,14 @@ const LocationSearch = ({ onSelect }) => {
       size="large"
       style={{ width: "100%" }}
       showSearch
-      value={query || null}
+      value={query}
       placeholder={"Search for a city"}
       defaultActiveFirstOption={false}
       loading={loading}
       error={error}
       onSelect={handleSelectCity}
-      onSearch={(text) => {
-        setQuery(text);
-        debouncedSearch(text);
-      }}
-      onChange={(text) => {
-        setQuery(text);
-      }}
-      notFoundContent={null}
+      onSearch={handleSearch}
+      onChange={(text) => setQuery(text)}
     >
       {cities.map((option) => {
         return (
