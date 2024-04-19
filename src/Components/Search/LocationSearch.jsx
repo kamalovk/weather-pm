@@ -2,45 +2,44 @@ import React, { useCallback, useState } from "react";
 import { Select } from "antd";
 
 import { debounce } from "../../utils/debounce";
-import { geoInstance } from "../../api/axiosInstance";
+import { fetchGeo } from "../../api/fetchApi";
 
 const LocationSearch = ({ onSelect }) => {
   const [query, setQuery] = useState("");
   const [cities, setCities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  // TODO replace with useDebounce
-  const debouncedSearch = useCallback(
-    debounce(async (text) => {
-      if (text) {
-        try {
-          setLoading(true);
-          const response = await geoInstance.get(`direct?q=${text}&limit=10`);
-          // TODO replace fetch
-          setCities(response.data);
-          setError(null);
-        } catch (error) {
-          setError("Failed to fetch cities.");
-        } finally {
-          setLoading(false);
-        }
-      } else {
-        setCities([]);
+
+  const fetchGeoData = async (text) => {
+    if (text) {
+      try {
+        setLoading(true);
+
+        const response = await fetchGeo('direct', { q: text, limit: 10 });
+
+        setCities(response);
+        setError(null);
+      } catch (error) {
+        setError("Failed to fetch cities.");
+      } finally {
+        setLoading(false);
       }
-    }, 1500),
-    []
-  );
+    } else {
+      setCities([]);
+    }
+  }
+
+  const debouncedSearch = useCallback(debounce(fetchGeoData, 1500), [])
+
   const handleSearch = (text) => {
     setQuery(text);
-    debouncedSearch(text);
+    debouncedSearch(text)
   };
 
   const handleSelectCity = (city) => {
-    console.log(city);
     const selectedObj = cities.find(
       (option) => `${option.name}-${option.country}` === city
     );
-    console.log(selectedObj, "obj");
     onSelect(selectedObj);
     setQuery(city);
     setCities([]);

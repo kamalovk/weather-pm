@@ -6,16 +6,30 @@ import CurrentWeather from "./CurrentWeather";
 import LocationSearch from "../Search/LocationSearch";
 import Loader from "../Loader/Loader";
 import useGeolocation from "../../hooks/useGeolocation";
-import { useWeatherData } from "../../hooks/useWeather";
+import { useWeather } from "../../hooks/useWeather";
+import { fetchMain } from "../../api/fetchApi";
 
 const WeatherMain = () => {
   const [selectedCity, setSelectedCity] = useState(null);
 
   const { geoError } = useGeolocation();
-  const { weatherData, loading } = useWeatherData(selectedCity);
+  const { weatherData, loading } = useWeather(selectedCity);
+
+  const {cityWeather, setCityWeather} = useState([])
 
   const hourly = weatherData?.hourly;
   const current = weatherData?.current;
+
+  const fetchWeatherByCoords = async (lat, lon) => {
+    try {
+      const response = await fetchMain('onecall', {lat, lon});
+
+      setCityWeather(response);
+      setError(null);
+    } catch (error) {
+      setError("City not found");
+    } 
+  }
 
   const handleSelectCity = (city) => {
     setSelectedCity(city);
