@@ -10,11 +10,11 @@ const fetchData = async (url, params = {}) => {
   try {
     const response = await fetch(requestUrl);
     if (!response.ok) {
-      throw new Error(`Ошибка запроса: ${response.statusText}`);
+      throw new Error(`Request Error: ${response.statusText}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Ошибка:', error);
+    console.error('Error:', error);
     throw error;
   }
 }
@@ -25,7 +25,6 @@ export function fetchMain(endpoint, params = {}) {
 }
 
 export function fetchGeo(endpoint, params = {}) {
-  console.log(endpoint, params, 'fetchGEO')
   const url = `${GEO_URL}${endpoint}`;
   return fetchData(url, { ...params, appid: API_KEY, units: 'metric' });
 }

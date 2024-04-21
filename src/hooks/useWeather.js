@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchMain } from "../api/fetchApi";
-import useGeolocation from "./useGeolocation";
 
-export const useWeather = () => {
-  const { coordinates, geoError } = useGeolocation()
-  const [weatherData, setWeatherData] = useState(null);
+export const useWeather = (lat, lon) => {
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -13,10 +11,10 @@ export const useWeather = () => {
       setLoading(true);
       const response = await fetchMain('onecall', {lat, lon});
 
-      setWeatherData(response);
+      setData(response);
       setError(null);
     } catch (error) {
-      setWeatherData(null);
+      setData(null);
       setError("City not found");
     } finally {
       setLoading(false);
@@ -24,11 +22,8 @@ export const useWeather = () => {
   }, [])
 
   useEffect(() => {
-    if (!geoError && coordinates.lat && coordinates.lon) {
-      fetchWeatherByCoords(coordinates.lat, coordinates.lon);
-    }
-  }, [fetchWeatherByCoords, coordinates.lat, coordinates.lon, geoError]);
+    if (lat && lon) fetchWeatherByCoords(lat, lon);
+  }, [lat, lon, fetchWeatherByCoords]);
 
-
-  return { weatherData, loading, error };
+  return { data, loading, error };
 };

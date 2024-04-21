@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Col, Row, Space } from "antd";
 
 import WeeklyWeather from "./WeeklyWeather";
@@ -7,32 +7,26 @@ import LocationSearch from "../Search/LocationSearch";
 import Loader from "../Loader/Loader";
 import useGeolocation from "../../hooks/useGeolocation";
 import { useWeather } from "../../hooks/useWeather";
-import { fetchMain } from "../../api/fetchApi";
 
 const WeatherMain = () => {
-  const [selectedCity, setSelectedCity] = useState(null);
+  const [cityName, setCityName] = useState(null);
+  const { coordinates, geoError } = useGeolocation()
+  const [lat, setLat] = useState('')
+  const [lon, setLon] = useState('')
+  const { data, loading } = useWeather(lat, lon);
 
-  const { geoError } = useGeolocation();
-  const { weatherData, loading } = useWeather(selectedCity);
-
-  const {cityWeather, setCityWeather} = useState([])
-
-  const hourly = weatherData?.hourly;
-  const current = weatherData?.current;
-
-  const fetchWeatherByCoords = async (lat, lon) => {
-    try {
-      const response = await fetchMain('onecall', {lat, lon});
-
-      setCityWeather(response);
-      setError(null);
-    } catch (error) {
-      setError("City not found");
-    } 
-  }
-
+  useEffect(() => {
+    setLat(coordinates.lat)
+    setLon(coordinates.lon)
+  }, [coordinates.lat, coordinates.lon])
+  
+  const hourly = data?.hourly;
+  const current = data?.current;
+ 
   const handleSelectCity = (city) => {
-    setSelectedCity(city);
+    setCityName(city?.name);
+    setLat(city.lat)
+    setLon(city.lon)
   };
 
   return (
@@ -55,13 +49,13 @@ const WeatherMain = () => {
                     hourly,
                     current,
                   }}
-                  currentCity={selectedCity}
+                  cityName={cityName}
                 />
               </Col>
             )}
-            {weatherData?.daily && (
+            {data?.daily && (
               <Col xs={24} md={12}>
-                <WeeklyWeather weeklyWeatherData={weatherData?.daily} />
+                <WeeklyWeather weeklyWeatherData={data?.daily} />
               </Col>
             )}
           </Row>

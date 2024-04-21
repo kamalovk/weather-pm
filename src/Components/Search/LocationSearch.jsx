@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Select } from "antd";
 
-import { debounce } from "../../utils/debounce";
 import { fetchGeo } from "../../api/fetchApi";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const LocationSearch = ({ onSelect }) => {
   const [query, setQuery] = useState("");
@@ -29,17 +29,21 @@ const LocationSearch = ({ onSelect }) => {
     }
   }
 
-  const debouncedSearch = useCallback(debounce(fetchGeoData, 1500), [])
+  const debouncedQuery = useDebounce(query, 1500)
+
+  useEffect(() => {
+    fetchGeoData(debouncedQuery)
+  }, [debouncedQuery])
 
   const handleSearch = (text) => {
     setQuery(text);
-    debouncedSearch(text)
   };
 
   const handleSelectCity = (city) => {
     const selectedObj = cities.find(
       (option) => `${option.name}-${option.country}` === city
     );
+
     onSelect(selectedObj);
     setQuery(city);
     setCities([]);
