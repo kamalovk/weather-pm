@@ -1,21 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Col, Row, Space } from "antd";
 
 import WeeklyWeather from "./WeeklyWeather";
 import CurrentWeather from "./CurrentWeather";
 import LocationSearch from "../Search/LocationSearch";
-import LoaderWrapper from "../Loader/Loader";
+import Loader from "../Loader/Loader";
 import useGeolocation from "../../hooks/useGeolocation";
 import { useWeather } from "../../hooks/useWeather";
 
 const WeatherMain = () => {
-  const [selectedCity, setSelectedCity] = useState(null);
+  const [cityName, setCityName] = useState(null);
+  const { coordinates, geoError } = useGeolocation()
+  const [lat, setLat] = useState('')
+  const [lon, setLon] = useState('')
+  const { data, loading } = useWeather(lat, lon);
 
-  const { geoError } = useGeolocation();
-  const { weatherData, loading } = useWeather(selectedCity);
-
+  useEffect(() => {
+    setLat(coordinates.lat)
+    setLon(coordinates.lon)
+  }, [coordinates.lat, coordinates.lon])
+  
+  const hourly = data?.hourly;
+  const current = data?.current;
+ 
   const handleSelectCity = (city) => {
-    setSelectedCity(city);
+    setCityName(city?.name);
+    setLat(city.lat)
+    setLon(city.lon)
   };
 
   return (
@@ -27,22 +38,28 @@ const WeatherMain = () => {
             {geoError ? <p>{geoError}</p> : null}
           </Col>
         </Row>
-        <LoaderWrapper loading={loading}>
+        {loading ? (
+          <Loader size="large" />
+        ) : (
           <Row justify="center" gutter={[16, 16]}>
-            <Col xs={24} md={10}>
-              <CurrentWeather
-                weatherData={{
-                  hourly: weatherData?.hourly,
-                  current: weatherData?.current,
-                }}
-                currentCity={selectedCity}
-              />
-            </Col>
-            <Col xs={24} md={12}>
-              <WeeklyWeather weeklyWeatherData={weatherData?.daily} />
-            </Col>
+            {hourly && current && (
+              <Col xs={24} md={10}>
+                <CurrentWeather
+                  weatherData={{
+                    hourly,
+                    current,
+                  }}
+                  cityName={cityName}
+                />
+              </Col>
+            )}
+            {data?.daily && (
+              <Col xs={24} md={12}>
+                <WeeklyWeather weeklyWeatherData={data?.daily} />
+              </Col>
+            )}
           </Row>
-        </LoaderWrapper>
+        )}
       </Space>
     </div>
   );

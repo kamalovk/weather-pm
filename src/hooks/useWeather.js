@@ -1,25 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import { axiosInstance } from "../api/axiosInstance";
-import useGeolocation from "./useGeolocation";
+import { fetchMain } from "../api/fetchApi";
 
-export const useWeather = (selectedCity) => {
-  const { coordinates, geoError } = useGeolocation()
-  const [weatherData, setWeatherData] = useState(null);
+export const useWeather = (lat, lon) => {
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const fetchWeatherByCoords = useCallback(async (lat, lon) => {
     try {
       setLoading(true);
+      const response = await fetchMain('onecall', {lat, lon});
 
-      const response = await axiosInstance.get(
-        `onecall?lat=${lat}&lon=${lon}`
-      );
-
-      setWeatherData(response.data);
+      setData(response);
       setError(null);
     } catch (error) {
-      setWeatherData(null);
+      setData(null);
       setError("City not found");
     } finally {
       setLoading(false);
@@ -27,13 +22,8 @@ export const useWeather = (selectedCity) => {
   }, [])
 
   useEffect(() => {
-    if (selectedCity !== undefined && selectedCity !== null) {
-      fetchWeatherByCoords(selectedCity.lat, selectedCity.lon);
-    } else if (geoError === null && coordinates.lat !== undefined && coordinates.lon !== undefined) {
-      fetchWeatherByCoords(coordinates.lat, coordinates.lon);
-    }
-  }, [fetchWeatherByCoords, coordinates.lat, coordinates.lon, selectedCity, geoError]);
+    if (lat && lon) fetchWeatherByCoords(lat, lon);
+  }, [lat, lon, fetchWeatherByCoords]);
 
-
-  return { weatherData, loading, error };
+  return { data, loading, error };
 };

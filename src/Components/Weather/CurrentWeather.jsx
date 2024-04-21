@@ -3,18 +3,15 @@ import React from "react";
 import { Card, List, Row } from "antd";
 import { getHours } from "../../utils/timeStamp";
 
-const CurrentWeather = ({ weatherData, currentCity }) => {
+const CurrentWeather = ({ weatherData, cityName }) => {
   const { current, hourly } = weatherData;
 
-  if (!current || !hourly) {
-    return null;
-  }
   return (
     <Card size="small" style={{ height: "auto" }}>
       <Row align="middle">
         <h2>
           Current Weather -{" "}
-          {currentCity?.name ? currentCity?.name : "Your location"}
+          {cityName ? cityName : "Your location"}
         </h2>
         <img
           src={`https://openweathermap.org/img/wn/${current.weather[0].icon}.png`}

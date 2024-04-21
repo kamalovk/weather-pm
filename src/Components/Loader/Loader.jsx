@@ -1,16 +1,12 @@
 import React from "react";
 import { Spin } from "antd";
 
-const LoaderWrapper = ({ loading, children }) => {
+const Loader = ({ size = "large" }) => {
   return (
     <div style={wrapperStyle}>
-      {loading ? (
-        <div style={spinnerStyle}>
-          <Spin size="large" />
-        </div>
-      ) : (
-        children
-      )}
+      <div style={spinnerStyle}>
+        <Spin size={size} />
+      </div>
     </div>
   );
 };
@@ -26,4 +22,4 @@ const spinnerStyle = {
   transform: "translate(-50%, -50%)",
 };
 
-export default LoaderWrapper;
+export default Loader;
