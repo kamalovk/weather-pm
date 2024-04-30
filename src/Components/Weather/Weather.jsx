@@ -9,8 +9,8 @@ import useGeolocation from "../../hooks/useGeolocation";
 import { useWeather } from "../../hooks/useWeather";
 
 const WeatherMain = () => {
-  const [cityName, setCityName] = useState(null);
   const { coordinates, geoError } = useGeolocation()
+  const [cityName, setCityName] = useState(null);
   const [lat, setLat] = useState('')
   const [lon, setLon] = useState('')
   const { data, loading } = useWeather(lat, lon);
