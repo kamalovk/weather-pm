@@ -3,6 +3,7 @@ import { Select } from "antd";
 
 import { fetchGeo } from "../../api/fetchApi";
 import { useDebounce } from "../../hooks/useDebounce";
+import { useQuery } from "../../query/useQuery";
 
 const LocationSearch = ({ onSelect }) => {
   const [query, setQuery] = useState("");
@@ -10,24 +11,26 @@ const LocationSearch = ({ onSelect }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+
   const fetchGeoData = async (text) => {
     if (text) {
       try {
-        setLoading(true);
 
         const response = await fetchGeo('direct', { q: text, limit: 10 });
 
-        setCities(response);
-        setError(null);
+        return response
       } catch (error) {
         setError("Failed to fetch cities.");
       } finally {
-        setLoading(false);
       }
     } else {
       setCities([]);
     }
-  }
+  } 
+
+  const { data, isLoading, error1, refetch } = useQuery('searchWeather', fetchGeoData);
+
+  
 
   const debouncedQuery = useDebounce(query, 1500)
 
