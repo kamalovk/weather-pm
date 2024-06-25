@@ -1,5 +1,4 @@
 
-# TEST TASK FOR COMPANY
 
 
 ## Available Scripts
